@@ -58,7 +58,8 @@ export async function iniciarLocacao(
 
   revalidatePath('/locacoes')
   revalidatePath('/veiculos')
-  redirect('/locacoes')
+  revalidatePath(`/veiculos/${resultado.data.veiculo_id}`)
+  redirect(`/veiculos/${resultado.data.veiculo_id}`)
 }
 
 export async function encerrarLocacao(

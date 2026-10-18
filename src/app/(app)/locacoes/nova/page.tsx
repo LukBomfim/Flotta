@@ -2,7 +2,10 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { LocacaoForm } from '../locacao-form'
 
-async function Conteudo() {
+type SearchParams = Promise<{ veiculo?: string }>
+
+async function Conteudo({ searchParams }: { searchParams: SearchParams }) {
+  const { veiculo: veiculoInicial } = await searchParams
   const supabase = await createClient()
 
   const [veiculosRes, locatariosRes, ativasRes] = await Promise.all([
@@ -35,15 +38,25 @@ async function Conteudo() {
   if (veiculos.length === 0) return <p>Nenhum veículo disponível.</p>
   if (locatarios.length === 0) return <p>Nenhum locatário livre.</p>
 
-  return <LocacaoForm veiculos={veiculos} locatarios={locatarios} />
+  return (
+    <LocacaoForm
+      veiculos={veiculos}
+      locatarios={locatarios}
+      veiculoInicial={veiculoInicial}
+    />
+  )
 }
 
-export default function NovaLocacaoPage() {
+export default function NovaLocacaoPage({
+  searchParams,
+}: {
+  searchParams: SearchParams
+}) {
   return (
     <div>
       <h1 className="mb-4 text-xl font-semibold">Nova locação</h1>
       <Suspense fallback={<p>Carregando...</p>}>
-        <Conteudo />
+        <Conteudo searchParams={searchParams} />
       </Suspense>
     </div>
   )

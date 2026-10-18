@@ -18,16 +18,11 @@ async function Conteudo({ params }: { params: Promise<{ id: string }> }) {
   if (!veiculo) notFound()
 
   return (
-    <>
-      <VeiculoForm
-        action={editarVeiculo.bind(null, id)}
-        inicial={veiculo}
-        rotuloBotao="Salvar alterações"
-      />
-      <Suspense fallback={<p className="mt-10">Carregando arquivos...</p>}>
-        <ArquivosSecao entidade="veiculo" entidadeId={id} />
-      </Suspense>
-    </>
+    <VeiculoForm
+      action={editarVeiculo.bind(null, id)}
+      inicial={veiculo}
+      rotuloBotao="Salvar alterações"
+    />
   )
 }
 

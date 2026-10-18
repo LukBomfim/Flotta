@@ -10,14 +10,20 @@ type Opcao = { id: string; rotulo: string }
 export function LocacaoForm({
   veiculos,
   locatarios,
+  veiculoInicial,
 }: {
   veiculos: Opcao[]
   locatarios: Opcao[]
+  veiculoInicial?: string
 }) {
   const [estado, formAction, pendente] = useActionState<EstadoForm, FormData>(
     iniciarLocacao,
     {}
   )
+
+  const veiculoPadrao =
+    estado.valores?.veiculo_id ??
+    (veiculos.some((v) => v.id === veiculoInicial) ? veiculoInicial : '')
 
   return (
     <form action={formAction} className="max-w-md space-y-4">
@@ -33,7 +39,7 @@ export function LocacaoForm({
           id="veiculo_id"
           name="veiculo_id"
           required
-          defaultValue={estado.valores?.veiculo_id ?? ''}
+          defaultValue={veiculoPadrao}
           className="w-full rounded border px-3 py-2"
         >
           <option value="" disabled>

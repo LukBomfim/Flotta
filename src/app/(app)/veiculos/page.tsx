@@ -27,7 +27,11 @@ async function ListaVeiculos() {
       <tbody>
         {veiculos.map((v) => (
           <tr key={v.id} className="border-b">
-            <td className="py-2 font-mono">{v.placa}</td>
+            <td className="py-2 font-mono">
+              <Link href={`/veiculos/${v.id}`} className="underline">
+                {v.placa}
+              </Link>
+            </td>
             <td>
               {v.marca} {v.modelo}
             </td>
