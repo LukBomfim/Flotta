@@ -47,6 +47,16 @@ async function ListaLocacoes() {
                 <span className="text-amber-700">Ativa</span>
               )}
             </td>
+            <td className="space-x-4 text-right">
+              <Link href={`/locacoes/${l.id}`} className="underline">
+                Detalhes
+              </Link>
+              {!l.data_fim && (
+                <Link href={`/locacoes/${l.id}/encerrar`} className="underline">
+                  Encerrar
+                </Link>
+              )}
+            </td>
             <td className="text-right">
               {!l.data_fim && (
                 <Link href={`/locacoes/${l.id}/encerrar`} className="underline">
