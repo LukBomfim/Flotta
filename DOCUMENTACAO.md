@@ -6,122 +6,163 @@
 
 **Descrição:** Sistema de Gestão e Locação de Veículos
 
-**Tipo de sistema:** Sistema web
+**Tipo de sistema:** Sistema web (multiempresa)
 
 **Responsável:** Lucas Bomfim
 
 ## 2. Descrição do Projeto
 
-O projeto consiste no desenvolvimento de um sistema web para auxiliar na gestão de veículos e locatários de uma empresa de locação de veículos.
+Sistema web para organizar veículos e locatários de empresas de locação de veículos.
 
-Inicialmente, o sistema será voltado para o cadastro e a organização das informações dos veículos e locatários, incluindo o armazenamento de seus respectivos documentos e arquivos.
+A primeira versão é um **organizador**: centraliza o cadastro de veículos e locatários, o vínculo entre eles (locação mínima) e os arquivos relacionados (documentos, contratos e vistorias). Ela **não** faz gestão financeira nem de contratos.
 
-O sistema será desenvolvido de forma incremental, permitindo adicionar novas funcionalidades conforme o projeto evoluir.
+O sistema será desenvolvido de forma incremental, adicionando funcionalidades conforme o projeto evoluir.
 
 ## 3. Objetivos
 
 ### 3.1 Objetivo geral
 
-Desenvolver um sistema para centralizar e organizar as informações e os documentos relacionados aos veículos e locatários.
+Centralizar e organizar as informações e os arquivos relacionados a veículos, locatários e suas locações.
 
 ### 3.2 Objetivos específicos
 
-- Cadastrar e consultar veículos;
-- Armazenar informações detalhadas dos veículos;
-- Organizar os documentos de cada veículo;
-- Cadastrar e consultar locatários;
-- Armazenar informações dos locatários;
-- Organizar os documentos de cada locatário;
-- Permitir futuras expansões para a gestão de locações.
+- Cadastrar, consultar e editar veículos;
+- Cadastrar, consultar e editar locatários;
+- Registrar o vínculo entre veículo e locatário (locação mínima);
+- Armazenar arquivos de veículos, locatários, contratos e vistorias;
+- Exibir, na tela do veículo, o histórico de locatários, destacando o atual;
+- Permitir futuras expansões para gestão completa de locações.
 
-## 4. Escopo inicial
+## 4. Escopo da versão 1
 
-A primeira versão do sistema contemplará:
+**Inclui:**
 
-- Cadastro de veículos;
-- Consulta e edição dos dados dos veículos;
-- Armazenamento de documentos, fotos e vídeos de vistoria;
-- Cadastro de locatários;
-- Consulta e edição dos dados dos locatários;
-- Armazenamento dos documentos dos locatários.
+- Cadastro, consulta e edição de veículos;
+- Cadastro, consulta e edição de locatários (com contato de emergência);
+- Locação mínima: veículo, locatário, data de início e data de fim;
+- Duas vistorias por locação (entrega e devolução), com quilometragem, fotos e vídeos;
+- Armazenamento de arquivos de veículos, locatários, contratos (por locação) e vistorias;
+- Status do veículo: **Alugado** ou **Disponível**;
+- Pesquisa de registros.
 
-Funcionalidades como contratos, pagamentos, reservas e manutenção poderão ser desenvolvidas em versões futuras.
+**Não inclui (versões futuras):**
+
+- Valores, pagamentos e controle financeiro;
+- Geração ou regras de contratos (apenas o arquivo do contrato é armazenado);
+- Reservas, manutenção, multas e relatórios;
+- Alertas de vencimento (o campo de vencimento já é armazenado);
+- Múltiplos usuários e perfis por empresa.
 
 ## 5. Metodologia de desenvolvimento
 
-Será utilizado o desenvolvimento incremental, no qual o sistema será construído por etapas.
+Desenvolvimento incremental, em etapas.
 
-Cada etapa acrescentará novas funcionalidades ao sistema, permitindo que ele evolua gradualmente.
+**Incremento 1:** Cadastro de veículos e locatários, locação mínima, vistorias e arquivos.
 
-**Incremento 1:** Cadastro de veículos e locatários.
+**Incremento 2:** Refinamento do gerenciamento de documentos (categorias, vencimentos e alertas).
 
-**Incremento 2:** Organização e gerenciamento dos documentos.
-
-**Incremento 3:** Gestão de locações e contratos.
+**Incremento 3:** Gestão completa de locações e contratos.
 
 **Incremento 4:** Controle financeiro e outras funcionalidades futuras.
 
-As etapas poderão ser ajustadas conforme as necessidades identificadas durante o desenvolvimento.
+As etapas podem ser ajustadas conforme as necessidades identificadas.
 
 ## 6. Tecnologias
 
-As tecnologias utilizadas serão definidas durante o planejamento do projeto.
-
-- **Frontend:** Typescript
-- **Backend:** Typescript + Node.js
-- **Banco de dados:** Supabase (PostgreSQL)
+- **Frontend:** TypeScript
+- **Backend:** TypeScript + Node.js
+- **Banco de dados e autenticação:** Supabase (PostgreSQL)
 - **Hospedagem:** Vercel
-- **Armazenamento de arquivos:** Cloudlfare R2
+- **Armazenamento de arquivos:** Cloudflare R2 (bucket privado)
 
 ## 7. Organização dos dados
 
-O sistema deverá organizar os dados em duas categorias principais:
+### 7.1 Multiempresa e acesso
 
-**Veículos**
+- Cada **empresa** possui um único login, com acesso total aos seus dados (usuário = empresa).
+- Não há perfis ou permissões na v1.
+- Toda tabela de dados possui `empresa_id`. O isolamento entre empresas é garantido por **RLS (Row Level Security)** no Supabase (`empresa_id = auth.uid()`).
 
-- Informações cadastrais;
-- Documentos;
-- Fotos e vídeos de vistoria;
-- Histórico futuro do veículo.
+### 7.2 Entidades
 
-**Locatários**
+**Veículo**
 
-- Informações pessoais;
-- Dados da habilitação;
-- Documentos pessoais;
-- Histórico futuro de locações.
+- Marca, modelo, ano, chassi e placa (todos obrigatórios);
+- Placa e chassi únicos por empresa;
+- Status: *Alugado* (calculado: existe locação sem data de fim) ou *Disponível* (caso contrário). Não há campo de status manual.
 
-Os dados cadastrais serão armazenados no banco de dados, enquanto os arquivos poderão ser armazenados em um serviço específico de armazenamento.
+**Locatário** (somente pessoa física)
+
+- Nome, CPF, telefone, e-mail e endereço;
+- Dados da CNH: número, categoria e validade;
+- Contato de emergência (um): nome, telefone e parentesco;
+- CPF único por empresa.
+
+**Locação (mínima)**
+
+- Veículo, locatário, data de início e data de fim (vazia enquanto ativa);
+- Um veículo só pode ter **uma locação ativa** por vez;
+- Um locatário só pode ter **uma locação ativa** por vez;
+- A locação é encerrada ao preencher a data de fim; o veículo volta a *Disponível* automaticamente.
+
+**Vistoria**
+
+- Pertence a uma locação;
+- Tipo: entrega ou devolução (no máximo uma de cada tipo por locação);
+- Data e quilometragem;
+- Fotos e vídeos como arquivos.
+
+**Arquivo**
+
+- Vinculado a exatamente um de: veículo, locatário, locação (contrato) ou vistoria;
+- Tipo/categoria, nome original, caminho no R2, tamanho, formato e data de vencimento (opcional).
+
+### 7.3 Armazenamento de arquivos
+
+- Dados cadastrais no PostgreSQL; arquivos no Cloudflare R2.
+- Bucket privado, acesso por URLs assinadas com expiração.
+- Estrutura de caminhos: `{empresa_id}/{veiculos|locatarios|locacoes|vistorias}/{id}/{arquivo}`.
+- Upload direto do navegador para o R2 via URL pré-assinada (a Vercel limita o tamanho das requisições).
+- Limites iniciais:
+  - Fotos e PDFs: até 10 MB (jpg, png, webp, pdf);
+  - Vídeos: até 200 MB (mp4, mov).
 
 ## 8. Requisitos gerais
 
 O sistema deverá:
 
-- Permitir o cadastro, a consulta e a edição de informações;
-- Organizar os documentos por veículo ou locatário;
-- Proteger os dados e documentos armazenados;
+- Permitir cadastro, consulta e edição de informações;
+- Organizar arquivos por veículo, locatário, locação ou vistoria;
+- Proteger dados e documentos (dados pessoais sujeitos à LGPD);
+- Isolar completamente os dados de cada empresa;
 - Permitir a pesquisa de registros;
-- Manter a integridade das informações;
+- Manter a integridade das informações (restrições no banco);
 - Possibilitar a inclusão de novas funcionalidades no futuro.
 
 ## 9. Evolução futura
 
-Após a implementação das funcionalidades iniciais, o sistema poderá receber novos módulos, como:
-
-- Gestão de locações;
-- Controle de contratos;
+- Gestão completa de locações e contratos;
 - Pagamentos e recebimentos;
-- Manutenção dos veículos;
+- Manutenção dos veículos (e status adicionais);
 - Controle de multas;
 - Relatórios gerenciais;
-- Alertas de vencimento de documentos.
+- Alertas de vencimento de documentos;
+- Múltiplos usuários e perfis por empresa.
 
-## 10. Observações e decisões pendentes
+## 10. Decisões tomadas
 
-Espaço reservado para registrar decisões e dúvidas que surgirem durante o planejamento.
+- Usuário = empresa, um login com acesso total;
+- Sistema multiempresa com RLS;
+- Somente pessoa física, com um contato de emergência;
+- Veículo: marca, modelo, ano, chassi e placa obrigatórios;
+- Status do veículo apenas calculado (Alugado/Disponível);
+- Uma locação ativa por veículo e por locatário (bloqueado no banco);
+- Duas vistorias por locação, com apenas a quilometragem como dado extra;
+- Limites de arquivo e upload direto para o R2 conforme seção 7.3.
 
-- [Definir as tecnologias do projeto]
-- [Definir a estrutura do banco de dados]
-- [Definir como será feito o armazenamento dos arquivos]
-- [Definir os tipos de usuários e suas permissões]
-- [Adicionar novas decisões conforme o projeto evoluir]
+## 11. Decisões pendentes
+
+- [Definir o framework do frontend (ex.: Next.js, React + Vite) e se o backend será separado ou via API routes/server actions]
+- [Definir critérios de pesquisa (placa, nome, CPF, modelo?)]
+- [Definir política de exclusão: exclusão definitiva ou lógica (arquivos e registros)]
+- [Definir fluxo de cadastro/criação da conta da empresa]
