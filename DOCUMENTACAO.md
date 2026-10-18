@@ -67,11 +67,11 @@ As etapas poderão ser ajustadas conforme as necessidades identificadas durante 
 
 As tecnologias utilizadas serão definidas durante o planejamento do projeto.
 
-- **Frontend:** [Preencher]
-- **Backend:** [Preencher]
-- **Banco de dados:** [Preencher]
-- **Hospedagem:** [Preencher]
-- **Armazenamento de arquivos:** [Preencher]
+- **Frontend:** Typescript
+- **Backend:** Typescript + Node.js
+- **Banco de dados:** Supabase (PostgreSQL)
+- **Hospedagem:** Vercel
+- **Armazenamento de arquivos:** Cloudlfare R2
 
 ## 7. Organização dos dados
 
