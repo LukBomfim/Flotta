@@ -1,8 +1,10 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { connection } from 'next/server'
 import type { Database } from '@/lib/database.types'
 
 export async function createClient() {
+  await connection() // dados por requisição: não prerenderizar
   const cookieStore = await cookies()
 
   return createServerClient<Database>(

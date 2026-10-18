@@ -11,7 +11,10 @@ export async function login(formData: FormData) {
     password: String(formData.get('password') ?? ''),
   })
 
-  if (error) redirect('/login?erro=1')
+  if (error) {
+    console.error('LOGIN ERROR:', error.message, error.status)
+    redirect('/login?erro=1')
+}
 
   redirect('/veiculos')
 }
