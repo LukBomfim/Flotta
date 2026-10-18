@@ -13,6 +13,7 @@ export default function AppLayout({
         <nav className="flex gap-4 text-sm">
           <Link href="/veiculos">Veículos</Link>
           <Link href="/locatarios">Locatários</Link>
+          <Link href="/locacoes">Locações</Link>
         </nav>
         <form action={logout} className="ml-auto">
           <button className="text-sm underline">Sair</button>
