@@ -21,7 +21,7 @@ function lerCampos(formData: FormData) {
   }
 }
 
-function traduzirErroBanco(error: { code?: string; message: string }) {
+function traduzirErroBanco(error: { code?: string; message: string }): EstadoForm {
   if (error.code === '23505') {
     if (error.message.includes('placa')) {
       return { erros: { placa: 'Já existe um veículo com esta placa.' } }
